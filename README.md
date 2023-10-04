@@ -32,6 +32,7 @@ Example workflow:
           DD_SITE: "datadoghq.com"
           ENV: DEV
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ORG_ID: myOrg
 
 
 ## Inputs
@@ -39,11 +40,14 @@ All inputs are required!
 
 `GITHUB_TOKEN`: GitHub token to access the build stats. Repo access should be good enough
 
+`GITHUB_ORG_ID`: GitHub Organization this action is running for.
+
 `DD_API_KEY`: Datadog API Key
 
 `DD_SITE`: Datadog Site ("datadoghq.com" for example)
 
 `ENV`: Datadog ENV (DEV/TEST/PROD etc...)
+
 
 ## Contributions
 * This Project was forked from SallyBlichG/github-build-stats Github action.
