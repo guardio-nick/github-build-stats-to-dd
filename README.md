@@ -1,14 +1,14 @@
-# Build Stats: Gather action stats & push it to BigQuery
+# Build Stats: Gather action stats & Ship it as Logs to Datadog
 
-This GitHub Action automates the process of gathering statistics from a specific run and pushing the collected data to a Google BigQuery table.
+This GitHub Action automates the process of gathering statistics from a specific run and pushing the collected data to Datadog as logs.
 
 ## Usage
 
-1. Create a service account key in Google Cloud Platform (GCP) with the necessary permissions to write to your BigQuery dataset.
+1. Create an API Key in datadog.
 
-2. Add the service account key as a secret in your GitHub repository settings. Name the secret `GOOGLE_APPLICATION_CREDENTIALS`.
+2. Add the Datadog API Key to the Action. Name the secret `DD_API_KEY`.
 
-3. Provide a BigQuery dataset, BigQuery table, and the project name in GCP, as inputs: `BQ_DATASET`, `BQ_TABLE`, `GOOGLE_PROJECT_NAME`.
+3. Provide the Datadog Site and the ENV you want to ship the logs to. (DD_SITE,ENV)
 
 4. Provide a `GITHUB_TOKEN`, as an input with repo access.
 
@@ -28,12 +28,10 @@ Example workflow:
       - name: Get Github Build Stats for current run
         uses: SallyBlichG/github-build-stats@main
         with: 
+          DD_API_KEY: ${{ secrets.DD_API_KEY }}
+          DD_SITE: "datadoghq.com"
+          ENV: DEV
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_ORG_ID: owner\organization id
-          GOOGLE_PROJECT_NAME: google_project_name
-          BQ_DATASET: bq_data_set
-          BQ_TABLE: github_action_stats
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
 
 
 ## Inputs
@@ -41,22 +39,15 @@ All inputs are required!
 
 `GITHUB_TOKEN`: GitHub token to access the build stats. Repo access should be good enough
 
-`GITHUB_ORG_ID`: The organization \ owner id where your repository is located. It might be your username, company name, etc
+`DD_API_KEY`: Datadog API Key
 
-`GITHUB_REPOSITORY_NAME`: The repository name that we with to get stats from its workflow. Default value is the current repository name, `${{ github.event.repository.name }}`
+`DD_SITE`: Datadog Site ("datadoghq.com" for example)
 
-`GITHUB_RUN_ID`: The run id that we wish to get stats from. Default value is the current run, `${{ github.run_id }}`
-
-`BQ_DATASET`: Big query dataset
-
-`BQ_TABLE`: Big query table
-
-`GOOGLE_PROJECT_NAME`: Google project name (GCP)
-
-`GOOGLE_APPLICATION_CREDENTIALS`: Google credentials (GCP), should be the service account
+`ENV`: Datadog ENV (DEV/TEST/PROD etc...)
 
 ## Contributions
+* This Project was forked from SallyBlichG/github-build-stats Github action.
 
-This project is using [Valgrind](https://valgrind.org/) for caching APT packages in GitHub Actions workflow.
-Valgrind is an instrumentation framework for building dynamic analysis tools. It can detect memory leaks and threading bugs, which are common in C and C++ programs.
+* This project is using [Valgrind](https://valgrind.org/) for caching APT packages in GitHub Actions workflow.
+  Valgrind is an instrumentation framework for building dynamic analysis tools. It can detect memory leaks and threading bugs, which are common in C and C++ programs.
 
