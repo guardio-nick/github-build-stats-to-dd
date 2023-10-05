@@ -1,4 +1,4 @@
-name: Github Actions Build Stats
+name: Github Actions Build Stats To Datadog Metric
 description: "Get Build Stats in GitHub Actions workflow."
 branding:
   icon: check-circle
