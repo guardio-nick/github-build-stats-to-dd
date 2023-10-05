@@ -6,8 +6,8 @@ from datadog import initialize, api
 
 
 options = {
-    f'api_key': {os.getenv('DD_API_KEY')},
-    f'app_key': {os.getenv('DD_APP_KEY')}
+    'api_key': os.getenv('DD_API_KEY'),
+    'app_key': os.getenv('DD_APP_KEY')
 }
 
 def main():
