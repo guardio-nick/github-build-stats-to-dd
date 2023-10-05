@@ -2,10 +2,16 @@ import http.client
 import json
 import os
 from datetime import datetime
-from google.cloud import bigquery
+from datadog import initialize, api
 
+
+options = {
+    f'api_key': {os.getenv('DD_API_KEY')},
+    f'app_key': {os.getenv('DD_APP_KEY')}
+}
 
 def main():
+    initialize(**options)
     get_build_state_github()
 
 
@@ -38,30 +44,31 @@ def get_build_state_github():
                     if time_difference.total_seconds() != 0.0:
                         print(row['steps'][step]["name"])
                         print(f"This step took: {time_difference.total_seconds()} seconds")
-                        bq_data = {'timestamp': (datetime_started_at.isoformat()),
-                                'workflow_name': workflow_name, 'job_name': job_name,
-                                'step_name': row['steps'][step]["name"], 'total_time': time_difference.total_seconds(), 'url': url}
-                        json_object_bq_data.append(bq_data)
-        write_stats_to_bq(json_object_bq_data)
+                        send_metric_to_dd(workflow_name,job_name,row['steps'][step]["name"],time_difference.total_seconds())
     except Exception as e:
         print("An exception occurred:", e)
         exit(1)
 
 
-def write_stats_to_bq(json_object_bq_data):
+def send_metric_to_dd(workflow_name,job_name,step_name,time_consumed):
     try:
-        client = bigquery.Client.from_service_account_json(os.getenv('GOOGLE_APPLICATION_CREDENTIALS'))
-        bq_details = f"{os.getenv('GOOGLE_PROJECT_NAME')}.{os.getenv('BQ_DATASET')}.{os.getenv('BQ_TABLE')}"
-        errors = client.insert_rows_json(bq_details, json_object_bq_data)
-        if not errors:
-            print("New rows have been added")
-        else:
-            print("Encountered errors while inserting rows: {}".format(errors))
+        metric_name = "github_actions_runtime_stats"
+        metric_value = time_consumed
+        tags = [
+            "environment:cicd",
+            f"region:{region_value}",
+            f"workflow:{workflow_name}",
+            f"job:{job_name}",
+            f"step:{step_name}"
+        ]
+        host = "github_actions_runner"
+
+        api.Metric.send(metric=metric_name, points=metric_value, tags=tags, host=host)
+        print(f"Sent metric '{metric_name}' with value {metric_value} to Datadog with tags {tags}.")
 
     except Exception as e:
-        print("An exception occurred:", e)
+        print("An exception occurred on sending metric to datadog:", e)
         exit(1)
-
 
 if __name__ == "__main__":
     main()

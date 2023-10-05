@@ -1,14 +1,14 @@
-# Build Stats: Gather action stats & Ship it as Logs to Datadog
+# Build Stats: Gather action stats & Ship it as Metrics to Datadog
 
-This GitHub Action automates the process of gathering statistics from a specific run and pushing the collected data to Datadog as logs.
+This GitHub Action automates the process of gathering statistics from a specific run and pushing the collected data to Datadog as metrics.
 
 ## Usage
 
-1. Create an API Key in datadog.
+1. Create an API and APP Keys in datadog.
 
 2. Add the Datadog API Key to the Action. Name the secret `DD_API_KEY`.
 
-3. Provide the Datadog Site and the ENV you want to ship the logs to. (DD_SITE,ENV)
+3. Add the Datadog API Key to the Action. Name the secret `DD_APP_KEY`.
 
 4. Provide a `GITHUB_TOKEN`, as an input with repo access.
 
@@ -19,18 +19,16 @@ This GitHub Action automates the process of gathering statistics from a specific
 Example workflow:
 
     build-stats:
-
       name: Build Stats
       runs-on: ubuntu-latest
       needs: [last_job]
     
       steps:
       - name: Get Github Build Stats for current run
-        uses: SallyBlichG/github-build-stats@main
+        uses: guardio-nick/github-build-stats-to-dd@main
         with: 
           DD_API_KEY: ${{ secrets.DD_API_KEY }}
-          DD_SITE: "datadoghq.com"
-          ENV: DEV
+          DD_API_KEY: ${{ secrets.DD_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_ORG_ID: myOrg
 
@@ -44,9 +42,7 @@ All inputs are required!
 
 `DD_API_KEY`: Datadog API Key
 
-`DD_SITE`: Datadog Site ("datadoghq.com" for example)
-
-`ENV`: Datadog ENV (DEV/TEST/PROD etc...)
+`DD_APP_KEY`: Datadog API Key
 
 
 ## Contributions
