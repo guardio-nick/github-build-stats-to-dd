@@ -56,7 +56,6 @@ def send_metric_to_dd(workflow_name,job_name,step_name,time_consumed):
         metric_value = time_consumed
         tags = [
             "environment:cicd",
-            f"region:{region_value}",
             f"workflow:{workflow_name}",
             f"job:{job_name}",
             f"step:{step_name}"
